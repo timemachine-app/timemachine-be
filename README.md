@@ -76,3 +76,7 @@ To test the health check endpoint, you can use `curl`:
 ```bash
 curl http://localhost:8080/health
 ```
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](https://github.com/git/git-scm.com/blob/main/MIT-LICENSE.txt) file for details.
