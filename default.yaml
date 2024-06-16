@@ -1,0 +1,20 @@
+server:
+  port: "8080"
+clients:
+  gemini:
+    key: some-key
+  openai:
+    key: some-key
+    model: some-model
+    maxtokens: 100
+prompts:
+  eventprompts:
+    eventcontexttimelinedetailsprompt: "some-prompt"
+    eventcontexttimeprompt: "some-prompt"
+    eventcontextinputmessageprompt: "some-prompt"
+    eventcontextprevtimelineprompt: "some-prompt"
+    eventcontextsysteminstructionprompt: "some-prompt"
+    eventcontextsystemresponseprompt: "some-prompt"
+ratelimit:
+  ratelimit: 10
+  windowinsec: 60
