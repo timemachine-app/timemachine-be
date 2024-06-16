@@ -88,7 +88,7 @@ go run main.go
 - **Endpoint**: `/event`
 - **Method**: `POST`
 - **Description**: Processes an event by calling the OpenAI LLM and returns the response.
-- **Request Body**: JSON object containing event data.
+- **Request Body**: Input Form containing event data.
 - **Response**: JSON object containing the response from OpenAI.
 
 ## Example
