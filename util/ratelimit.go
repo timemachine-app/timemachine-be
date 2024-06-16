@@ -2,6 +2,7 @@ package util
 
 import (
 	"net/http"
+	"strings"
 	"sync"
 	"time"
 
@@ -21,6 +22,12 @@ var rateLimitStore = struct {
 // Rate limiting middleware
 func RateLimitMiddleware(ratelimitConfig config.RateLimitConfig) gin.HandlerFunc {
 	return func(c *gin.Context) {
+		// Skip rate limiting for /health endpoint
+		if strings.HasPrefix(c.Request.URL.Path, "/health") {
+			c.Next()
+			return
+		}
+
 		clientIP := c.ClientIP()
 		currentTime := time.Now().Unix()
 
