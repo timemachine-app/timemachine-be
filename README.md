@@ -25,7 +25,6 @@ TIMEMACHINE-BE/
 ├── go.mod
 ├── go.sum
 └── main.go
-```
 
 ## Getting Started
 
