@@ -50,7 +50,7 @@ func (h *EventHandler) ProcessEvent(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": genericBadRequestError})
 		return
 	}
-	contextPrompt = fmt.Sprintf("%s: %s. ", h.eventPrompts.EventContextTimePrompt, eventTime)
+	contextPrompt = contextPrompt + fmt.Sprintf("%s: %s. ", h.eventPrompts.EventContextTimePrompt, eventTime)
 
 	eventMessage := c.PostForm(inputFormMessageKey)
 	if eventMessage != "" {
