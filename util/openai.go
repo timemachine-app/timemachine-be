@@ -3,11 +3,12 @@ package util
 import "strings"
 
 func CleanOpenAIJson(input string) string {
-	// Trim the prefix "json" or "```" from the start of the string
+	// Trim the prefix "json" and "```" from the start of the string
+	if strings.HasPrefix(input, "```") {
+		input = strings.TrimPrefix(input, "```")
+	}
 	if strings.HasPrefix(input, "json") {
 		input = strings.TrimPrefix(input, "json")
-	} else if strings.HasPrefix(input, "```") {
-		input = strings.TrimPrefix(input, "```")
 	}
 
 	// Trim the postfix "```" from the end of the string

@@ -91,10 +91,10 @@ func (h *EventHandler) ProcessEvent(c *gin.Context) {
 	}
 
 	// clean json
-	response = util.CleanOpenAIJson(response)
+	cleanResponse := util.CleanOpenAIJson(response)
 
 	var jsonData map[string]interface{}
-	if err := json.Unmarshal([]byte(response), &jsonData); err != nil {
+	if err := json.Unmarshal([]byte(cleanResponse), &jsonData); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": genericProcessingError})
 		return
 	}
