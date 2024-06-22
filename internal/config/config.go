@@ -39,15 +39,10 @@ type PromptsConfig struct {
 type EventPromptsConfig struct {
 	EventContextTimelineDetailsPrompt   string
 	EventContextTimePrompt              string
-	EventContextLogPrompt               string
 	EventContextInputMessagePrompt      string
 	EventContextPrevTimelinePrompt      string
 	EventContextSystemInstructionPrompt string
 	EventContextSystemResponsePrompt    string
-
-	EventThoughtContextInputMessagePrompt      string
-	EventThoughtContextSystemInstructionPrompt string
-	EventThoughtContextSystemResponsePrompt    string
 }
 
 type RateLimitConfig struct {
