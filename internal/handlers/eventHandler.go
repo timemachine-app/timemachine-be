@@ -36,7 +36,7 @@ func NewEventHandler(openAIConfig config.OpenAIConfig, eventPrompts config.Event
 	}
 }
 
-func (h *EventHandler) ProcessEvent(c *gin.Context) {
+func (h *EventHandler) ProcessThoughts(c *gin.Context) {
 	contextPrompt := ""
 	timelineSummary := c.PostForm(inputFormPrevTimelineSummary)
 	if timelineSummary == "" {
@@ -101,4 +101,55 @@ func (h *EventHandler) ProcessEvent(c *gin.Context) {
 
 	// Return the JSON data as a response
 	c.JSON(http.StatusOK, jsonData)
+}
+
+func (h *EventHandler) ProcessFeed(c *gin.Context) {
+	contextPrompt := ""
+	eventMessage := c.PostForm(inputFormMessageKey)
+	if eventMessage != "" {
+		contextPrompt = contextPrompt +
+			fmt.Sprintf("%s: %s. ", h.eventPrompts.EventThoughtContextInputMessagePrompt, eventMessage)
+	}
+
+	file, _, err := c.Request.FormFile(inputFormPhotoKey)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": genericBadRequestError})
+		return
+	}
+	defer file.Close()
+
+	// Read file content
+	imageBytes, err := io.ReadAll(file)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": genericBadRequestError})
+		return
+	}
+
+	response, err := openai.CallOpenAIAPI(
+		contextPrompt, &imageBytes,
+		h.eventPrompts.EventThoughtContextSystemInstructionPrompt,
+		h.eventPrompts.EventThoughtContextSystemResponsePrompt,
+		h.openAIConfig.Key,
+		h.openAIConfig.Model,
+		h.openAIConfig.MaxTokens)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": genericProcessingError})
+		return
+	}
+
+	// clean json
+	cleanResponse := util.CleanOpenAIJson(response)
+
+	var jsonData map[string]interface{}
+	if err := json.Unmarshal([]byte(cleanResponse), &jsonData); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": genericProcessingError})
+		return
+	}
+
+	// Return the JSON data as a response
+	c.JSON(http.StatusOK, jsonData)
+}
+
+func (h *EventHandler) ProcessEvent(c *gin.Context) {
+	h.ProcessThoughts(c)
 }

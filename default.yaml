@@ -15,6 +15,10 @@ prompts:
     eventcontextprevtimelineprompt: "some-prompt"
     eventcontextsysteminstructionprompt: "some-prompt"
     eventcontextsystemresponseprompt: "some-prompt"
+    eventthoughtcontextinputmessageprompt: "some-prompt"
+    eventthoughtcontextsysteminstructionprompt: "some-prompt"
+    eventthoughtcontextsystemresponseprompt: "some-prompt"
+
 ratelimit:
   ratelimit: 10
   windowinsec: 60
