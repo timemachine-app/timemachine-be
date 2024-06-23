@@ -34,6 +34,7 @@ func main() {
 	// event handler
 	eventHandler := handlers.NewEventHandler(config.Clients.OpenAI, config.Prompts.EventPrompts)
 	router.POST("/event", eventHandler.ProcessEvent)
+	router.POST("/search", eventHandler.Search)
 
 	// setPortAndRun starts router on a server port
 	router.Run(fmt.Sprintf(":%d", config.Server.Port))

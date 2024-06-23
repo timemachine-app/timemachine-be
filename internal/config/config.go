@@ -43,6 +43,11 @@ type EventPromptsConfig struct {
 	EventContextPrevTimelinePrompt      string
 	EventContextSystemInstructionPrompt string
 	EventContextSystemResponsePrompt    string
+
+	SearchContextHistoryPrompt           string
+	SearchContextSearchTextPrompt        string
+	SearchContextSystemInstructionPrompt string
+	SearchContextSystemResponsePrompt    string
 }
 
 type RateLimitConfig struct {

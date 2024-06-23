@@ -20,6 +20,9 @@ const (
 	inputFormPrevTimelineEvents  = "timemachine-prev-timeline-events"
 	inputFormPrevTimelineSummary = "timeline-summary"
 
+	inputFormHistory    = "timemachine-history"
+	inputFormSearchText = "timemachine-search-text"
+
 	genericProcessingError = "Failed to process an event"
 	genericBadRequestError = "Bad Input Request"
 )
@@ -82,6 +85,47 @@ func (h *EventHandler) ProcessEvent(c *gin.Context) {
 		contextPrompt, &imageBytes,
 		h.eventPrompts.EventContextSystemInstructionPrompt,
 		h.eventPrompts.EventContextSystemResponsePrompt,
+		h.openAIConfig.Key,
+		h.openAIConfig.Model,
+		h.openAIConfig.MaxTokens)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": genericProcessingError})
+		return
+	}
+
+	// clean json
+	cleanResponse := util.CleanOpenAIJson(response)
+
+	var jsonData map[string]interface{}
+	if err := json.Unmarshal([]byte(cleanResponse), &jsonData); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": genericProcessingError})
+		return
+	}
+
+	// Return the JSON data as a response
+	c.JSON(http.StatusOK, jsonData)
+}
+
+func (h *EventHandler) Search(c *gin.Context) {
+	contextPrompt := ""
+	inputFormHistory := c.PostForm(inputFormHistory)
+	if inputFormHistory == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": genericBadRequestError})
+		return
+	}
+	contextPrompt = fmt.Sprintf("%s: %s. ", h.eventPrompts.SearchContextHistoryPrompt, inputFormHistory)
+
+	searchText := c.PostForm(inputFormSearchText)
+	if searchText == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": genericBadRequestError})
+		return
+	}
+	contextPrompt = contextPrompt + fmt.Sprintf("%s: %s. ", h.eventPrompts.SearchContextSearchTextPrompt, searchText)
+
+	response, err := openai.CallOpenAIAPI(
+		contextPrompt, nil,
+		h.eventPrompts.SearchContextSystemInstructionPrompt,
+		h.eventPrompts.SearchContextSystemResponsePrompt,
 		h.openAIConfig.Key,
 		h.openAIConfig.Model,
 		h.openAIConfig.MaxTokens)
