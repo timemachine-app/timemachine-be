@@ -7,6 +7,15 @@ clients:
     key: some-key
     model: some-model
     maxtokens: 100
+  signinwithapple:
+    appleclientid: 'some-key'
+    teamid: 'some-key'
+    keyid: 'some-key'
+    privatekey: 'some-key'
+  superbase:
+    url: 'some-key'
+    key: 'some-key'
+    tablename: 'some-key'
 prompts:
   eventprompts:
     eventcontexttimelinedetailsprompt: "some-prompt"
@@ -23,3 +32,4 @@ prompts:
 ratelimit:
   ratelimit: 10
   windowinsec: 60
+jwtsecret:  "some-key"

@@ -23,7 +23,7 @@ const (
 	inputFormHistory    = "timemachine-history"
 	inputFormSearchText = "timemachine-search-text"
 
-	genericProcessingError = "Failed to process an event"
+	genericProcessingError = "Failed to process your request"
 	genericBadRequestError = "Bad Input Request"
 )
 

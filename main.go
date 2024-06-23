@@ -9,6 +9,7 @@ import (
 
 	"github.com/timemachine-app/timemachine-be/internal/config"
 	"github.com/timemachine-app/timemachine-be/internal/handlers"
+	"github.com/timemachine-app/timemachine-be/superbase"
 	"github.com/timemachine-app/timemachine-be/util"
 )
 
@@ -24,13 +25,21 @@ func main() {
 		log.Fatalf("Failed to load config: %v", err)
 	}
 
+	// Intialize Superbase
+	superbaseClient := superbase.NewSupabaseClient(config.Clients.Superbase)
+
 	// Initialize Router
 	router := gin.Default()
 	// Apply the rate limiting middleware
-	router.Use(util.RateLimitMiddleware(config.RateLimit))
+	router.Use(util.ValidationMiddleware(config.RateLimit, config.JwtSecret))
 	// health handler
 	healthHandler := handlers.NewHealthHandler()
 	router.GET("/health", healthHandler.IsHealthy)
+	// account handler
+	accountHandler := handlers.NewAccountHandler(config.Clients.SingInWithApple, superbaseClient, config.JwtSecret)
+	router.POST("/signin/apple", accountHandler.SignInWithApple)
+	router.POST("/delete", accountHandler.DeleteAccount)
+
 	// event handler
 	eventHandler := handlers.NewEventHandler(config.Clients.OpenAI, config.Prompts.EventPrompts)
 	router.POST("/event", eventHandler.ProcessEvent)

@@ -11,6 +11,7 @@ type Config struct {
 	Clients   ClientsConfig
 	Prompts   PromptsConfig
 	RateLimit RateLimitConfig
+	JwtSecret string
 }
 
 type ServerConfig struct {
@@ -18,8 +19,10 @@ type ServerConfig struct {
 }
 
 type ClientsConfig struct {
-	Gemini GeminiConfig
-	OpenAI OpenAIConfig
+	Gemini          GeminiConfig
+	OpenAI          OpenAIConfig
+	SingInWithApple SingInWithAppleConfig
+	Superbase       SuperbaseConfig
 }
 
 type GeminiConfig struct {
@@ -30,6 +33,19 @@ type OpenAIConfig struct {
 	Key       string
 	Model     string
 	MaxTokens int
+}
+
+type SingInWithAppleConfig struct {
+	AppleClientId string
+	TeamId        string
+	KeyId         string
+	PrivateKey    string
+}
+
+type SuperbaseConfig struct {
+	Url       string
+	Key       string
+	TableName string
 }
 
 type PromptsConfig struct {
