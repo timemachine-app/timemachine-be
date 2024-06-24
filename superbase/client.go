@@ -32,17 +32,17 @@ func NewSupabaseClient(superbaseConfig config.SuperbaseConfig) *SupabaseClient {
 	}
 }
 
-func (s *SupabaseClient) AddUser(user User) (string, error) {
+func (s *SupabaseClient) AddUser(user User) error {
 	url := fmt.Sprintf("%s/rest/v1/%s", s.superbaseConfig.Url, s.superbaseConfig.AccountTableName)
 
 	jsonData, err := json.Marshal(user)
 	if err != nil {
-		return "", fmt.Errorf("failed to marshal user data: %w", err)
+		return fmt.Errorf("failed to marshal user data: %w", err)
 	}
 
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonData))
 	if err != nil {
-		return "", fmt.Errorf("failed to create request: %w", err)
+		return fmt.Errorf("failed to create request: %w", err)
 	}
 
 	req.Header.Set("Content-Type", "application/json")
@@ -52,22 +52,15 @@ func (s *SupabaseClient) AddUser(user User) (string, error) {
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		return "", fmt.Errorf("failed to execute request: %w", err)
+		return fmt.Errorf("failed to execute request: %w", err)
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusCreated {
-		bodyBytes, _ := io.ReadAll(resp.Body)
-		bodyString := string(bodyBytes)
-		return "", fmt.Errorf("failed to add user, status code: %d, response: %s", resp.StatusCode, bodyString)
+		return fmt.Errorf("failed to add user, status code: %d, response")
 	}
 
-	var responseData User
-	if err := json.NewDecoder(resp.Body).Decode(&responseData); err != nil {
-		return "", fmt.Errorf("failed to decode response: %w", err)
-	}
-
-	return responseData.UserId, nil
+	return nil
 }
 
 func (s *SupabaseClient) GetUser(externalUserId string) (User, error) {

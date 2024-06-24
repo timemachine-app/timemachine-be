@@ -40,13 +40,13 @@ func (h *AccountHandler) SignInWithApple(c *gin.Context) {
 	}
 
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": genericBadRequestError})
 		return
 	}
 
 	clientSecret, err := generateClientSecret(h.signInWithAppleConfig)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate client secret"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": genericProcessingError})
 		return
 	}
 
@@ -57,27 +57,27 @@ func (h *AccountHandler) SignInWithApple(c *gin.Context) {
 		"grant_type":    {"authorization_code"},
 	})
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get token from Apple"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": genericProcessingError})
 		return
 	}
 	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to read response body"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": genericProcessingError})
 		return
 	}
 
 	var tokenResp AppleTokenResponse
 	if err := json.Unmarshal(body, &tokenResp); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to unmarshal token response"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": genericProcessingError})
 		return
 	}
 
 	user, err := h.supabaseClient.GetUser(req.ExternalId)
 	if err != nil {
 		if err.Error() != "user not found" {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get user"})
+			c.JSON(http.StatusInternalServerError, gin.H{"error": genericProcessingError})
 			return
 		}
 
@@ -86,12 +86,18 @@ func (h *AccountHandler) SignInWithApple(c *gin.Context) {
 			ExternalUserId: req.ExternalId,
 		}
 
-		userId, err := h.supabaseClient.AddUser(user)
+		err := h.supabaseClient.AddUser(user)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to add user"})
+			c.JSON(http.StatusInternalServerError, gin.H{"error": genericProcessingError})
 			return
 		}
-		user.UserId = userId
+
+		// get user again after creating one
+		user, err = h.supabaseClient.GetUser(req.ExternalId)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": genericProcessingError})
+			return
+		}
 	}
 
 	// Generate JWT token for the user
