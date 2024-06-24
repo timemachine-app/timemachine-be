@@ -103,6 +103,7 @@ func (h *AccountHandler) SignInWithApple(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"jwt_token": jwtToken,
+		"userId":    user.UserId,
 	})
 }
 
