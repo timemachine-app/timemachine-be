@@ -19,14 +19,14 @@ type AppleTokenResponse struct {
 }
 
 type AccountHandler struct {
-	singInWithAppleConfig config.SingInWithAppleConfig
+	signInWithAppleConfig config.SignInWithAppleConfig
 	supabaseClient        *superbase.SupabaseClient
 	jwtSecret             string
 }
 
-func NewAccountHandler(singInWithAppleConfig config.SingInWithAppleConfig, supabaseClient *superbase.SupabaseClient, jwtSecret string) *AccountHandler {
+func NewAccountHandler(signInWithAppleConfig config.SignInWithAppleConfig, supabaseClient *superbase.SupabaseClient, jwtSecret string) *AccountHandler {
 	return &AccountHandler{
-		singInWithAppleConfig: singInWithAppleConfig,
+		signInWithAppleConfig: signInWithAppleConfig,
 		supabaseClient:        supabaseClient,
 		jwtSecret:             jwtSecret,
 	}
@@ -44,14 +44,14 @@ func (h *AccountHandler) SignInWithApple(c *gin.Context) {
 		return
 	}
 
-	clientSecret, err := generateClientSecret(h.singInWithAppleConfig)
+	clientSecret, err := generateClientSecret(h.signInWithAppleConfig)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate client secret"})
 		return
 	}
 
 	resp, err := http.PostForm("https://appleid.apple.com/auth/token", url.Values{
-		"client_id":     {h.singInWithAppleConfig.AppleClientId},
+		"client_id":     {h.signInWithAppleConfig.AppleClientId},
 		"client_secret": {clientSecret},
 		"code":          {req.Code},
 		"grant_type":    {"authorization_code"},
@@ -125,7 +125,7 @@ func (h *AccountHandler) DeleteAccount(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"success": "true"})
 }
 
-func generateClientSecret(singInWithAppleConfig config.SingInWithAppleConfig) (string, error) {
+func generateClientSecret(singInWithAppleConfig config.SignInWithAppleConfig) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodES256, jwt.MapClaims{
 		"iss": singInWithAppleConfig.TeamId,
 		"iat": time.Now().Unix(),

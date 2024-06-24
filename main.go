@@ -36,7 +36,7 @@ func main() {
 	healthHandler := handlers.NewHealthHandler()
 	router.GET("/health", healthHandler.IsHealthy)
 	// account handler
-	accountHandler := handlers.NewAccountHandler(config.Clients.SingInWithApple, superbaseClient, config.JwtSecret)
+	accountHandler := handlers.NewAccountHandler(config.Clients.SignInWithApple, superbaseClient, config.JwtSecret)
 	router.POST("/signin/apple", accountHandler.SignInWithApple)
 	router.POST("/delete", accountHandler.DeleteAccount)
 

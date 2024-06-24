@@ -57,16 +57,12 @@ func (s *SupabaseClient) AddUser(user User) (string, error) {
 		return "", fmt.Errorf("failed to add user, status code: %d, response: %s", resp.StatusCode, bodyString)
 	}
 
-	var responseData []User
+	var responseData User
 	if err := json.NewDecoder(resp.Body).Decode(&responseData); err != nil {
 		return "", fmt.Errorf("failed to decode response: %w", err)
 	}
 
-	if len(responseData) == 0 {
-		return "", fmt.Errorf("no user ID returned")
-	}
-
-	return responseData[0].UserId, nil
+	return responseData.UserId, nil
 }
 
 func (s *SupabaseClient) GetUser(externalUserId string) (User, error) {

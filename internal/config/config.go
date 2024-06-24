@@ -21,7 +21,7 @@ type ServerConfig struct {
 type ClientsConfig struct {
 	Gemini          GeminiConfig
 	OpenAI          OpenAIConfig
-	SingInWithApple SingInWithAppleConfig
+	SignInWithApple SignInWithAppleConfig
 	Superbase       SuperbaseConfig
 }
 
@@ -35,7 +35,7 @@ type OpenAIConfig struct {
 	MaxTokens int
 }
 
-type SingInWithAppleConfig struct {
+type SignInWithAppleConfig struct {
 	AppleClientId string
 	TeamId        string
 	KeyId         string
