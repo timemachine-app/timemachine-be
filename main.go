@@ -31,7 +31,7 @@ func main() {
 	// Initialize Router
 	router := gin.Default()
 	// Apply the rate limiting middleware
-	router.Use(util.ValidationMiddleware(config.RateLimit, config.JwtSecret))
+	router.Use(util.ValidationMiddleware(config.RateLimit, config.JwtSecret, superbaseClient))
 	// health handler
 	healthHandler := handlers.NewHealthHandler()
 	router.GET("/health", healthHandler.IsHealthy)

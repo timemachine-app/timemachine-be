@@ -10,6 +10,7 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"github.com/timemachine-app/timemachine-be/internal/config"
+	"github.com/timemachine-app/timemachine-be/superbase"
 )
 
 // TODO: Use Redis when you start horizontal scale
@@ -44,7 +45,8 @@ func validateToken(tokenString, jwtSecret string) *string {
 }
 
 // Rate limiting + token validation middleware
-func ValidationMiddleware(ratelimitConfig config.RateLimitConfig, jwtSecret string) gin.HandlerFunc {
+func ValidationMiddleware(
+	ratelimitConfig config.RateLimitConfig, jwtSecret string, superbaseClient *superbase.SupabaseClient) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// Skip rate limiting for /health endpoint
 		if strings.HasPrefix(c.Request.URL.Path, "/health") {
@@ -60,6 +62,10 @@ func ValidationMiddleware(ratelimitConfig config.RateLimitConfig, jwtSecret stri
 			userId := validateToken(tokenString, jwtSecret)
 			if userId != nil {
 				clientIdentifier = *userId
+				superbaseClient.AddUsageEvent(superbase.UsageEvent{
+					UserId:    *userId,
+					EventType: c.Request.URL.Path,
+				})
 			} else {
 				// Invalid token, return unauthorized error
 				c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})

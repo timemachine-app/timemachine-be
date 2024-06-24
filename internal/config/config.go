@@ -43,9 +43,10 @@ type SignInWithAppleConfig struct {
 }
 
 type SuperbaseConfig struct {
-	Url       string
-	Key       string
-	TableName string
+	Url              string
+	Key              string
+	AccountTableName string
+	UsageTableName   string
 }
 
 type PromptsConfig struct {

@@ -15,7 +15,8 @@ clients:
   superbase:
     url: 'some-key'
     key: 'some-key'
-    tablename: 'some-key'
+    accounttablename: 'some-key'
+    usagetablename: 'some-key'
 prompts:
   eventprompts:
     eventcontexttimelinedetailsprompt: "some-prompt"
