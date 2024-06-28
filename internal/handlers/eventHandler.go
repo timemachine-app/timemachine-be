@@ -42,11 +42,9 @@ func NewEventHandler(openAIConfig config.OpenAIConfig, eventPrompts config.Event
 func (h *EventHandler) ProcessEvent(c *gin.Context) {
 	contextPrompt := ""
 	timelineSummary := c.PostForm(inputFormPrevTimelineSummary)
-	if timelineSummary == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": genericBadRequestError})
-		return
+	if timelineSummary != "" {
+		contextPrompt = fmt.Sprintf("%s: %s. ", h.eventPrompts.EventContextTimelineDetailsPrompt, timelineSummary)
 	}
-	contextPrompt = fmt.Sprintf("%s: %s. ", h.eventPrompts.EventContextTimelineDetailsPrompt, timelineSummary)
 
 	eventTime := c.PostForm(inputFormDate)
 	if eventTime == "" {
