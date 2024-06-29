@@ -59,11 +59,11 @@ func (h *EventHandler) ProcessEvent(c *gin.Context) {
 			fmt.Sprintf("%s: %s. ", h.eventPrompts.EventContextInputMessagePrompt, eventMessage)
 	}
 
-	previousEvents := c.PostForm(inputFormPrevTimelineEvents)
-	if previousEvents != "" {
-		contextPrompt = contextPrompt +
-			fmt.Sprintf("%s: %s. ", h.eventPrompts.EventContextPrevTimelinePrompt, previousEvents)
-	}
+	// previousEvents := c.PostForm(inputFormPrevTimelineEvents)
+	// if previousEvents != "" {
+	// 	contextPrompt = contextPrompt +
+	// 		fmt.Sprintf("%s: %s. ", h.eventPrompts.EventContextPrevTimelinePrompt, previousEvents)
+	// }
 
 	file, _, err := c.Request.FormFile(inputFormPhotoKey)
 	if err != nil {
