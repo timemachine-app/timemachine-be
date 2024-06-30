@@ -3,6 +3,7 @@ server:
 clients:
   gemini:
     key: some-key
+    model: some-model
   openai:
     key: some-key
     model: some-model

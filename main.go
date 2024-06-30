@@ -41,7 +41,7 @@ func main() {
 	router.POST("/delete", accountHandler.DeleteAccount)
 
 	// event handler
-	eventHandler := handlers.NewEventHandler(config.Clients.OpenAI, config.Prompts.EventPrompts)
+	eventHandler := handlers.NewEventHandler(config.Clients.OpenAI, config.Clients.Gemini, config.Prompts.EventPrompts)
 	router.POST("/event", eventHandler.ProcessEvent)
 	router.POST("/search", eventHandler.Search)
 

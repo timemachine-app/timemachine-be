@@ -2,7 +2,7 @@ package util
 
 import "strings"
 
-func CleanOpenAIJson(input string) string {
+func CleanLLMJson(input string) string {
 	// Trim the prefix "json" and "```" from the start of the string
 	if strings.HasPrefix(input, "```") {
 		input = strings.TrimPrefix(input, "```")

@@ -26,7 +26,8 @@ type ClientsConfig struct {
 }
 
 type GeminiConfig struct {
-	Key string
+	Key   string
+	Model string
 }
 
 type OpenAIConfig struct {

@@ -8,6 +8,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
+	"github.com/timemachine-app/timemachine-be/gemini"
 	"github.com/timemachine-app/timemachine-be/internal/config"
 	"github.com/timemachine-app/timemachine-be/openai"
 	"github.com/timemachine-app/timemachine-be/util"
@@ -29,12 +30,14 @@ const (
 
 type EventHandler struct {
 	openAIConfig config.OpenAIConfig
+	geminiConfig config.GeminiConfig
 	eventPrompts config.EventPromptsConfig
 }
 
-func NewEventHandler(openAIConfig config.OpenAIConfig, eventPrompts config.EventPromptsConfig) *EventHandler {
+func NewEventHandler(openAIConfig config.OpenAIConfig, geminiConfig config.GeminiConfig, eventPrompts config.EventPromptsConfig) *EventHandler {
 	return &EventHandler{
 		openAIConfig: openAIConfig,
+		geminiConfig: geminiConfig,
 		eventPrompts: eventPrompts,
 	}
 }
@@ -79,20 +82,27 @@ func (h *EventHandler) ProcessEvent(c *gin.Context) {
 		return
 	}
 
-	response, err := openai.CallOpenAIAPI(
+	// response, err := openai.CallOpenAIAPI(
+	// 	contextPrompt, &imageBytes,
+	// 	h.eventPrompts.EventContextSystemInstructionPrompt,
+	// 	h.eventPrompts.EventContextSystemResponsePrompt,
+	// 	h.openAIConfig.Key,
+	// 	h.openAIConfig.Model,
+	// 	h.openAIConfig.MaxTokens)
+
+	response, err := gemini.CallGeminiAPI(
 		contextPrompt, &imageBytes,
 		h.eventPrompts.EventContextSystemInstructionPrompt,
 		h.eventPrompts.EventContextSystemResponsePrompt,
-		h.openAIConfig.Key,
-		h.openAIConfig.Model,
-		h.openAIConfig.MaxTokens)
+		h.geminiConfig.Key,
+		h.geminiConfig.Model)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": genericProcessingError})
 		return
 	}
 
 	// clean json
-	cleanResponse := util.CleanOpenAIJson(response)
+	cleanResponse := util.CleanLLMJson(response)
 
 	var jsonData map[string]interface{}
 	if err := json.Unmarshal([]byte(cleanResponse), &jsonData); err != nil {
@@ -133,7 +143,7 @@ func (h *EventHandler) Search(c *gin.Context) {
 	}
 
 	// clean json
-	cleanResponse := util.CleanOpenAIJson(response)
+	cleanResponse := util.CleanLLMJson(response)
 
 	var jsonData map[string]interface{}
 	if err := json.Unmarshal([]byte(cleanResponse), &jsonData); err != nil {
