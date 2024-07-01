@@ -68,18 +68,18 @@ func (h *EventHandler) ProcessEvent(c *gin.Context) {
 	// 		fmt.Sprintf("%s: %s. ", h.eventPrompts.EventContextPrevTimelinePrompt, previousEvents)
 	// }
 
+	// Handle file input
+	var imageBytes *[]byte = nil
 	file, _, err := c.Request.FormFile(inputFormPhotoKey)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": genericBadRequestError})
-		return
-	}
-	defer file.Close()
-
-	// Read file content
-	imageBytes, err := io.ReadAll(file)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": genericBadRequestError})
-		return
+	if err == nil {
+		defer file.Close()
+		// Read file content
+		currentImageBytes, err := io.ReadAll(file)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": genericProcessingError})
+			return
+		}
+		imageBytes = &currentImageBytes
 	}
 
 	// response, err := openai.CallOpenAIAPI(
@@ -91,7 +91,7 @@ func (h *EventHandler) ProcessEvent(c *gin.Context) {
 	// 	h.openAIConfig.MaxTokens)
 
 	response, err := gemini.CallGeminiAPI(
-		contextPrompt, &imageBytes,
+		contextPrompt, imageBytes,
 		h.eventPrompts.EventContextSystemInstructionPrompt,
 		h.eventPrompts.EventContextSystemResponsePrompt,
 		h.geminiConfig.Key,

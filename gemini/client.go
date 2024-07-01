@@ -26,8 +26,13 @@ func CallGeminiAPI(
 	genModel := client.GenerativeModel(model)
 
 	prompt := []genai.Part{
-		genai.ImageData("jpeg", *imageBytes),
 		genai.Text(systemPrompt + "\n" + contextPrompt + "\n" + responsePrompt),
+	}
+	if imageBytes != nil {
+		prompt = []genai.Part{
+			genai.ImageData("jpeg", *imageBytes),
+			genai.Text(systemPrompt + "\n" + contextPrompt + "\n" + responsePrompt),
+		}
 	}
 	resp, err := genModel.GenerateContent(ctx, prompt...)
 
